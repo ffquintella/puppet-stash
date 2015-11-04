@@ -7,8 +7,13 @@ Type=forking
 Environment="JAVA_HOME=<%= scope.lookupvar('stash::javahome') %>"
 PIDFile=<%= scope.lookupvar('stash::webappdir') %>/work/catalina.pid
 User=<%= scope.lookupvar('stash::user') %>
+<% if scope.function_versioncmp([scope.lookupvar('stash::version'),'4.0.0']) > 0 { -%>
+ExecStart=<%= scope.lookupvar('stash::webappdir') %>/bin/start-bitbucket.sh
+ExecStop=<%= scope.lookupvar('stash::webappdir') %>/bin/stop-bitbucket.sh
+<% else  -%>
 ExecStart=<%= scope.lookupvar('stash::webappdir') %>/bin/start-stash.sh
 ExecStop=<%= scope.lookupvar('stash::webappdir') %>/bin/stop-stash.sh
+<% end -%>
 
 [Install]
 WantedBy=multi-user.target
