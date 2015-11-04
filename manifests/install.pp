@@ -23,6 +23,13 @@ class stash::install(
 
   class{'::archive':}
 
+  package{'curl':
+    ensure => present
+  } -> 
+  package{'rubygem-curb':
+    ensure => present
+  }
+
   if $manage_usr_grp {
     #Manage the group in the module
     group { $group:
