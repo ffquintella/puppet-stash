@@ -53,12 +53,17 @@
             <Host name="localhost" appBase="webapps"
                   unpackWARs="true" autoDeploy="true"
                   xmlValidation="false" xmlNamespaceAware="false">
-
-                <Context docBase="${catalina.home}/atlassian-stash"
+<% if scope.function_versioncmp([scope.lookupvar('stash::version'),'4.0.0']) > 0  -%>
+                <Context docBase="${catalina.home}/atlassian-bitbucket"
                          path="<%= @context_path %>"
                          reloadable="false"
                          useHttpOnly="true"/>
-
+<% else -%>
+              <Context docBase="${catalina.home}/atlassian-stash"
+                       path="<%= @context_path %>"
+                       reloadable="false"
+                       useHttpOnly="true"/>
+<% end ->%>
             </Host>
         </Engine>
     </Service>
