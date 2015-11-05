@@ -91,14 +91,25 @@ class stash::config(
       before  => Class['stash::service'],
     }
   }
-
-  file { "${stash::homedir}/${moved}stash-config.properties":
-    content => template('stash/stash-config.properties.erb'),
-    mode    => '0640',
-    require => [
-      Class['stash::install'],
-      File[$stash::webappdir],
-      File[$stash::homedir]
-    ],
+  if versioncmp($version, '4.0.0') > 0 {
+    file { "${stash::homedir}/${moved}bitbucket.properties":
+      content => template('stash/stash-config.properties.erb'),
+      mode    => '0640',
+      require => [
+        Class['stash::install'],
+        File[$stash::webappdir],
+        File[$stash::homedir]
+      ],
+    }
+  }else{
+    file { "${stash::homedir}/${moved}stash-config.properties":
+      content => template('stash/stash-config.properties.erb'),
+      mode    => '0640',
+      require => [
+        Class['stash::install'],
+        File[$stash::webappdir],
+        File[$stash::homedir]
+      ],
+    }
   }
 }
