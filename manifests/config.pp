@@ -76,7 +76,7 @@ class stash::config(
       path    => "${stash::webappdir}/conf/scripts.cfg",
       section => '',
       setting => 'bitbucket_context',
-      value   => "$context_path-$version",
+      value   => "${stash::webappdir}",
       require => Class['stash::install'],
       before  => Class['stash::service'],
     }
