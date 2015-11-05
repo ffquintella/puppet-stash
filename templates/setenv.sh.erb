@@ -74,7 +74,7 @@ if [ $? -eq 0 ]; then
     exit 1
 fi
 
-STASH_HOME_MINUSD=-Dstash.home=$STASH_HOME
+STASH_HOME_MINUSD="-Dstash.home=$STASH_HOME -Dbitbucket.home=$BITBUCKET_HOME"
 
 if [ "$JVM_LIBRARY_PATH" != "" ]; then
     JVM_LIBRARY_PATH_MINUSD=-Djava.library.path=$JVM_LIBRARY_PATH
