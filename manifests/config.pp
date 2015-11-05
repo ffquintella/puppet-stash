@@ -71,6 +71,15 @@ class stash::config(
       require => Class['stash::install'],
       before  => Class['stash::service'],
     }
+    ini_setting { 'bitbucket_context':
+      ensure  => present,
+      path    => "${stash::webappdir}/conf/scripts.cfg",
+      section => '',
+      setting => 'bitbucket_context',
+      value   => "$context_path-$version",
+      require => Class['stash::install'],
+      before  => Class['stash::service'],
+    }
   }else{
     ini_setting { 'stash_httpport':
       ensure  => present,
