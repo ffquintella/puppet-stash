@@ -2,6 +2,7 @@
 # One way to set the STASH HOME path is here via this variable.  Simply uncomment it and set a valid path like
 # /stash/home.  You can of course set it outside in the command terminal; that will also work.
 #
+BITBUCKET_HOME="<%= scope.lookupvar('stash::homedir') %>"
 STASH_HOME="<%= scope.lookupvar('stash::homedir') %>"
 JAVA_HOME=<%= scope.lookupvar('stash::javahome') %>
 
