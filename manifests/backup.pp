@@ -23,7 +23,7 @@ class stash::backup(
   ) {
 
   $appdir = "${backup_home}/${product}-backup-client-${version}"
-  
+
   file { $appdir:
     ensure => 'directory',
     owner  => $user,
@@ -31,6 +31,9 @@ class stash::backup(
   }
 
   if versioncmp($stash::version, "4.0.0") < 0 {
+    # Enable Cronjob
+    $backup_cmd = "${java_bin} -Dstash.password=\"${backuppass}\" -Dstash.user=\"${backupuser}\" -Dstash.baseUrl=\"http://localhost:7990\" -Dstash.home=${homedir} -Dbackup.home=${backup_home}/archives -jar ${appdir}/stash-backup-client.jar"
+
     file { $backup_home:
       ensure => 'directory',
       owner  => $user,
@@ -79,6 +82,9 @@ class stash::backup(
     }
   }else{
     $file = "${product}-backup-distribution-${version}.zip"
+    # Enable Cronjob
+    $backup_cmd = "${java_bin} -Dstash.password=\"${backuppass}\" -Dstash.user=\"${backupuser}\" -Dstash.baseUrl=\"http://localhost:7990\" -Dstash.home=${homedir} -Dbackup.home=${backup_home}/archives -jar ${appdir}/bitbucket-backup-client.jar"
+
     archive { "/tmp/${file}":
       ensure       => present,
       extract      => true,
@@ -98,8 +104,6 @@ class stash::backup(
     $java_bin = '/usr/bin/java'
   }
 
-  # Enable Cronjob
-  $backup_cmd = "${java_bin} -Dstash.password=\"${backuppass}\" -Dstash.user=\"${backupuser}\" -Dstash.baseUrl=\"http://localhost:7990\" -Dstash.home=${homedir} -Dbackup.home=${backup_home}/archives -jar ${appdir}/stash-backup-client.jar"
 
   cron { 'Backup Stash':
     ensure  => $ensure,
