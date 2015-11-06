@@ -24,56 +24,71 @@ class stash::backup(
 
   $appdir = "${backup_home}/${product}-backup-client-${version}"
 
-  file { $backup_home:
-    ensure => 'directory',
-    owner  => $user,
-    group  => $group,
-  }
-  file { "${backup_home}/archives":
-    ensure => 'directory',
-    owner  => $user,
-    group  => $group,
-  }
+  if versioncmp($stash::version, "4.0.0") < 0 {
+    file { $backup_home:
+      ensure => 'directory',
+      owner  => $user,
+      group  => $group,
+    }
+    file { "${backup_home}/archives":
+      ensure => 'directory',
+      owner  => $user,
+      group  => $group,
+    }
 
-  $file = "${product}-backup-distribution-${version}.${format}"
+    $file = "${product}-backup-distribution-${version}.${format}"
 
-  file { $appdir:
-    ensure => 'directory',
-    owner  => $user,
-    group  => $group,
-  }
+    file { $appdir:
+      ensure => 'directory',
+      owner  => $user,
+      group  => $group,
+    }
 
-  case $deploy_module {
-    'staging': {
-      require staging
-      staging::file { $file:
-        source  => "${download_url}/${version}/${file}",
-        timeout => 1800,
-      } ->
-      staging::extract { $file:
-        target  => $appdir,
-        creates => "${appdir}/lib",
-        strip   => 1,
-        user    => $user,
-        group   => $group,
-        require => [ User[$user], File[$appdir] ],
+    case $deploy_module {
+      'staging': {
+        require staging
+        staging::file { $file:
+          source  => "${download_url}/${version}/${file}",
+          timeout => 1800,
+        } ->
+        staging::extract { $file:
+          target  => $appdir,
+          creates => "${appdir}/lib",
+          strip   => 1,
+          user    => $user,
+          group   => $group,
+          require => [ User[$user], File[$appdir] ],
+        }
+      }
+      'archive': {
+        archive { "/tmp/${file}":
+          ensure       => present,
+          extract      => true,
+          extract_path => $backup_home,
+          source       => "${download_url}/${version}/${file}",
+          user         => $user,
+          group        => $group,
+          creates      => "${appdir}/lib",
+          cleanup      => true,
+          before       => File[$appdir],
+        }
+      }
+      default: {
+        fail('deploy_module parameter must equal "archive" or staging""')
       }
     }
-    'archive': {
-      archive { "/tmp/${file}":
-        ensure       => present,
-        extract      => true,
-        extract_path => $backup_home,
-        source       => "${download_url}/${version}/${file}",
-        user         => $user,
-        group        => $group,
-        creates      => "${appdir}/lib",
-        cleanup      => true,
-        before       => File[$appdir],
-      }
-    }
-    default: {
-      fail('deploy_module parameter must equal "archive" or staging""')
+  }else{
+    $file = "${product}-backup-distribution-${version}.zip"
+    archive { "/tmp/${file}":
+      ensure       => present,
+      extract      => true,
+      extract_path => $backup_home,
+      source       => "${download_url}",
+      user         => $user,
+      group        => $group,
+      creates      => "${appdir}/lib",
+      cleanup      => true,
+      before       => File[$appdir],
     }
   }
 
