@@ -23,6 +23,7 @@ class stash::backup(
   ) {
 
   $appdir = "${backup_home}/${product}-backup-client-${version}"
+  
   file { $appdir:
     ensure => 'directory',
     owner  => $user,
