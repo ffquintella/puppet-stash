@@ -23,6 +23,11 @@ class stash::backup(
   ) {
 
   $appdir = "${backup_home}/${product}-backup-client-${version}"
+  file { $appdir:
+    ensure => 'directory',
+    owner  => $user,
+    group  => $group,
+  }
 
   if versioncmp($stash::version, "4.0.0") < 0 {
     file { $backup_home:
@@ -37,12 +42,6 @@ class stash::backup(
     }
 
     $file = "${product}-backup-distribution-${version}.${format}"
-
-    file { $appdir:
-      ensure => 'directory',
-      owner  => $user,
-      group  => $group,
-    }
 
     case $deploy_module {
       'staging': {
@@ -89,7 +88,7 @@ class stash::backup(
       creates      => "${appdir}/lib",
       cleanup      => true,
       before       => File[$appdir],
-    } 
+    }
   }
 
   if $javahome {
