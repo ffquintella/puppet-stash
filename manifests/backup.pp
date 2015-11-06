@@ -24,6 +24,12 @@ class stash::backup(
 
   $appdir = "${backup_home}/${product}-backup-client-${version}"
 
+  if $javahome {
+    $java_bin = "${javahome}/bin/java"
+  } else {
+    $java_bin = '/usr/bin/java'
+  }
+
   file { $appdir:
     ensure => 'directory',
     owner  => $user,
@@ -98,11 +104,7 @@ class stash::backup(
     }
   }
 
-  if $javahome {
-    $java_bin = "${javahome}/bin/java"
-  } else {
-    $java_bin = '/usr/bin/java'
-  }
+
 
 
   cron { 'Backup Stash':
