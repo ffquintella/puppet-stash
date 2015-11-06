@@ -89,7 +89,7 @@ class stash::backup(
       creates      => "${appdir}/lib",
       cleanup      => true,
       before       => File[$appdir],
-    }
+    } 
   }
 
   if $javahome {
